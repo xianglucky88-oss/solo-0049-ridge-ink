@@ -1,0 +1,31 @@
+{
+  "language": "JavaScript (Node.js 20+ / 原生浏览器 ES modules)",
+  "project_shape": "fullstack",
+  "source_extensions": [
+    ".mjs"
+  ],
+  "build_command": "npm run build",
+  "testing": "deferred",
+  "workflow_checks": [
+    {
+      "workflow_id": "surface",
+      "command": "node --input-type=module -e 'import {compose} from \"./server/sheet/compose.mjs\"; import {demo} from \"./server/terrain/demo.mjs\"; const a=compose({grid:demo()}); if(a.faces<=0||a.faces>=2*27*21)process.exit(1); console.log(a.faces);'"
+    },
+    {
+      "workflow_id": "levels",
+      "command": "node --input-type=module -e 'import {compose} from \"./server/sheet/compose.mjs\"; import {demo} from \"./server/terrain/demo.mjs\"; const a=compose({grid:{width:2,height:2,unit:1,elevations:[0,10,10,20]},interval:5}); if(!a.levels.some(x=>x.height===10&&x.paths===1))process.exit(1); console.log(a.levels);'"
+    },
+    {
+      "workflow_id": "crop",
+      "command": "node --input-type=module -e 'import {compose} from \"./server/sheet/compose.mjs\"; import {demo} from \"./server/terrain/demo.mjs\"; const a=compose({grid:demo(),bounds:{left:40,bottom:40,right:450,top:370}}); if(!a.svg.includes('\"'\"'viewBox=\"0 0 410 330\"'\"'\"'))process.exit(1); console.log(a.bounds);'"
+    },
+    {
+      "workflow_id": "section",
+      "command": "node --input-type=module -e 'import {compose} from \"./server/sheet/compose.mjs\"; import {demo} from \"./server/terrain/demo.mjs\"; const a=compose({grid:demo(),section:{x1:0,y1:140,x2:540,y2:140,count:61}}); if(a.profile.length!==61||!a.profile.some(p=>p.z===null)||a.profile.at(-1).distance!==540)process.exit(1); console.log(a.section.length);'"
+    },
+    {
+      "workflow_id": "export",
+      "command": "node --input-type=module -e 'import {compose} from \"./server/sheet/compose.mjs\"; import {demo} from \"./server/terrain/demo.mjs\"; const data={grid:demo()}; const a=compose(data); if(!a.svg.includes(\"data-elevation\")||a.svg!==compose(data).svg)process.exit(1); console.log(a.svg.length);'"
+    }
+  ]
+}

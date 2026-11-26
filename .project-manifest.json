@@ -1,0 +1,137 @@
+{
+  "project_shape": "fullstack",
+  "modules": [
+    {
+      "id": "http",
+      "path": "server/http",
+      "responsibility": "输入边界及输出媒体类型"
+    },
+    {
+      "id": "terrain",
+      "path": "server/terrain",
+      "responsibility": "高程格网、相邻面和三角插值"
+    },
+    {
+      "id": "contour",
+      "path": "server/contour",
+      "responsibility": "等高交点与路径连通"
+    },
+    {
+      "id": "profile",
+      "path": "server/profile",
+      "responsibility": "测线长度、采样和缺测"
+    },
+    {
+      "id": "sheet",
+      "path": "server/sheet",
+      "responsibility": "选幅、裁剪与矢量制图"
+    },
+    {
+      "id": "ui",
+      "path": "public/js",
+      "responsibility": "制图编辑、预览和下载"
+    }
+  ],
+  "workflows": [
+    {
+      "id": "surface",
+      "name": "格网与三角化",
+      "entry": "POST sheet",
+      "success": "形成有效三角面",
+      "failure": "缺测面不参与制图",
+      "verification": "node --input-type=module -e 'import {compose} from \"./server/sheet/compose.mjs\"; import {demo} from \"./server/terrain/demo.mjs\"; const a=compose({grid:demo()}); if(a.faces<=0||a.faces>=2*27*21)process.exit(1); console.log(a.faces);'",
+      "module_ids": [
+        "http",
+        "terrain",
+        "sheet"
+      ],
+      "steps": [
+        "从 POST sheet 解析业务输入",
+        "应用领域状态与边界，形成有效三角面"
+      ]
+    },
+    {
+      "id": "levels",
+      "name": "等值线提取",
+      "entry": "POST sheet",
+      "success": "同级交点拼成路径",
+      "failure": "高程级超过上限拒绝",
+      "verification": "node --input-type=module -e 'import {compose} from \"./server/sheet/compose.mjs\"; import {demo} from \"./server/terrain/demo.mjs\"; const a=compose({grid:{width:2,height:2,unit:1,elevations:[0,10,10,20]},interval:5}); if(!a.levels.some(x=>x.height===10&&x.paths===1))process.exit(1); console.log(a.levels);'",
+      "module_ids": [
+        "terrain",
+        "contour",
+        "sheet"
+      ],
+      "steps": [
+        "从 POST sheet 解析业务输入",
+        "应用领域状态与边界，同级交点拼成路径"
+      ]
+    },
+    {
+      "id": "crop",
+      "name": "选幅裁线",
+      "entry": "POST sheet",
+      "success": "输出限制在图幅的线",
+      "failure": "退化图幅拒绝",
+      "verification": "node --input-type=module -e 'import {compose} from \"./server/sheet/compose.mjs\"; import {demo} from \"./server/terrain/demo.mjs\"; const a=compose({grid:demo(),bounds:{left:40,bottom:40,right:450,top:370}}); if(!a.svg.includes('\"'\"'viewBox=\"0 0 410 330\"'\"'\"'))process.exit(1); console.log(a.bounds);'",
+      "module_ids": [
+        "terrain",
+        "contour",
+        "sheet",
+        "ui"
+      ],
+      "steps": [
+        "从 POST sheet 解析业务输入",
+        "应用领域状态与边界，输出限制在图幅的线"
+      ]
+    },
+    {
+      "id": "section",
+      "name": "测线剖面",
+      "entry": "POST sheet",
+      "success": "测点按真实里程排列并报告缺测",
+      "failure": "端点出界拒绝",
+      "verification": "node --input-type=module -e 'import {compose} from \"./server/sheet/compose.mjs\"; import {demo} from \"./server/terrain/demo.mjs\"; const a=compose({grid:demo(),section:{x1:0,y1:140,x2:540,y2:140,count:61}}); if(a.profile.length!==61||!a.profile.some(p=>p.z===null)||a.profile.at(-1).distance!==540)process.exit(1); console.log(a.section.length);'",
+      "module_ids": [
+        "terrain",
+        "profile",
+        "sheet",
+        "ui"
+      ],
+      "steps": [
+        "从 POST sheet 解析业务输入",
+        "应用领域状态与边界，测点按真实里程排列并报告缺测"
+      ]
+    },
+    {
+      "id": "export",
+      "name": "矢量图导出",
+      "entry": "POST export",
+      "success": "可重复产出同样的 SVG",
+      "failure": "过密选幅返回提示",
+      "verification": "node --input-type=module -e 'import {compose} from \"./server/sheet/compose.mjs\"; import {demo} from \"./server/terrain/demo.mjs\"; const data={grid:demo()}; const a=compose(data); if(!a.svg.includes(\"data-elevation\")||a.svg!==compose(data).svg)process.exit(1); console.log(a.svg.length);'",
+      "module_ids": [
+        "http",
+        "contour",
+        "sheet",
+        "ui"
+      ],
+      "steps": [
+        "从 POST export 解析业务输入",
+        "应用领域状态与边界，可重复产出同样的 SVG"
+      ]
+    }
+  ],
+  "complexity": {
+    "mechanisms": [
+      "格网解析和缺测",
+      "三角化",
+      "等高线交点归属",
+      "按边拼接与分岔拆分",
+      "选幅几何裁剪",
+      "跨三角面的剖面插值",
+      "可重现 SVG",
+      "几何输出容量限制"
+    ]
+  }
+}
