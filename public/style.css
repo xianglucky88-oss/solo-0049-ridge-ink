@@ -82,6 +82,29 @@ aside,.print {
   max-height: 53vh;
   width: 100%;
   min-height: 3rem;
+  cursor: crosshair;
+}
+
+.water-note {
+  color: #1d5a7d;
+  font-size: .85rem;
+  min-height: 1.2em;
+}
+
+.water-fields {
+  display: grid;
+  gap: 7px;
+}
+
+.water-fields .hint {
+  font-size: .76rem;
+  color: #645741;
+  margin: 0;
+}
+
+input[readonly] {
+  background: #f1ecdd;
+  color: #1d5a7d;
 }
 
 .cut {

@@ -5,10 +5,17 @@
 <body><header><h1>岭线排图</h1><p>高程格网制图与测线剖面</p></header>
 <main><section class="print"><div class="printbar"><h2>图幅</h2><button id="export" disabled>导出当前图幅 SVG</button></div>
 <div class="map"><img id="sheet" alt="当前图幅的地形等高线" hidden></div>
+<p id="water-note" class="water-note"></p>
 <div class="cut"><h2>测线剖面</h2><p id="profile-note"></p><canvas id="profile" width="610" height="145" aria-label="高程剖面图"></canvas></div></section>
 <aside><h2>制图参数</h2><form><div class="tools"><button id="demo" type="button">读取示例</button><label>导入格网<input id="file" type="file" accept=".json"></label></div>
 <label>格网 JSON<textarea name="grid" rows="3" spellcheck="false"></textarea></label>
 <div class="pair"><label>等高距 / 米<input name="interval" type="number" value="20" step="any"></label><label>参考高程 / 米<input name="offset" type="number" value="0" step="any"></label></div>
+<fieldset class="water-fields"><legend>积水连通</legend>
+<label>水位 / 米<input name="level" type="number" step="any" placeholder="给定水位后在图幅上点选入水位置"></label>
+<div class="pair"><label>入水点东 / 米<input name="entryX" type="number" step="any" readonly></label><label>入水点北 / 米<input name="entryY" type="number" step="any" readonly></label></div>
+<button id="clear-entry" type="button" disabled>清除入水位置</button>
+<p class="hint">在图幅内低洼处点选；山脊、缺测区、留白、水位平齐处以及只在顶点碰头的位置都不能作为起点。范围按全格网计算，选幅只影响显示。</p>
+</fieldset>
 <label class="toggle"><input type="checkbox" name="crop">限定图幅</label>
 <fieldset id="crop-fields" hidden><legend>图幅边界 / 米</legend><div class="pair"><label>西<input type="number" name="left" value="40" step="any"></label><label>东<input type="number" name="right" value="450" step="any"></label><label>南<input type="number" name="bottom" value="40" step="any"></label><label>北<input type="number" name="top" value="370" step="any"></label></div></fieldset>
 <label class="toggle"><input type="checkbox" name="measure">自定义测线</label>

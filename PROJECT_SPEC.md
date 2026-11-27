@@ -12,7 +12,17 @@
 
 ## 接口
 
-`GET /api/ridge-ink/demo` 返回格网。`POST /api/ridge-ink/sheet` 接收 `grid`、`interval`、`offset` 以及可选 `bounds`、`section`，返回图幅 SVG、分级路径数和剖面。`POST /api/ridge-ink/export` 使用相同输入下载 SVG。
+`GET /api/ridge-ink/demo` 返回格网。`POST /api/ridge-ink/sheet` 接收 `grid`、`interval`、`offset` 以及可选 `bounds`、`section`、`water`，返回图幅 SVG、分级路径数和剖面。`POST /api/ridge-ink/export` 使用相同输入下载 SVG。
+
+`water` 形如 `{ "level": 200, "x": 60, "y": 60 }`，`x`、`y` 为入水位置的地面坐标（东、北）。返回的 `water.rings` 用地面坐标描述该起点在给定水位可达的积水范围，`water.entry` 原样回传入水坐标；SVG 以半透明填色叠加该范围并标记入水点。
+
+## 积水连通规则
+
+- 三角面至少一个顶点严格低于水位才是湿面；恰好等于水位的顶点不算入水。
+- 两片湿面只有沿共享边、且该边至少一个端点低于水位时才相通。仅在一个顶点碰头、窄坎恰好平齐水位、缺测面隔断都不会连通。
+- 连通分析始终在整个格网的有效三角网上进行，与选幅无关；出图时才把范围裁剪到图幅。水在幅外绕行后进入另一侧时，图幅内的部分照常填色。
+- 入水位置按图面显示的地面坐标取点；起点以地面坐标保留，缩小图幅不会移动它。
+- 以下起点一律拒绝并提示重选：格网之外、无有效三角面支撑（缺测区/留白）、地面不低于水位、以及格点同时接触多个互不相通湿分量的歧义点。
 
 ## 模块
 
@@ -21,7 +31,8 @@
 - `server/contour` 负责等高交点与路径连通。
 - `server/profile` 负责测线长度、采样和缺测。
 - `server/sheet` 负责选幅、裁剪与矢量制图。
-- `public/js` 负责制图编辑、预览和下载。
+- `server/water` 负责湿面标注、起点定位、连通分量与积水环绘制。
+- `public/js` 负责制图编辑、预览、图面取点和下载。
 
 ## 验证
 

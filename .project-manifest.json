@@ -27,9 +27,14 @@
       "responsibility": "选幅、裁剪与矢量制图"
     },
     {
+      "id": "water",
+      "path": "server/water",
+      "responsibility": "湿面标注、入水点定位、连通分量与积水环"
+    },
+    {
       "id": "ui",
       "path": "public/js",
-      "responsibility": "制图编辑、预览和下载"
+      "responsibility": "制图编辑、预览、图面取点和下载"
     }
   ],
   "workflows": [
@@ -120,6 +125,26 @@
         "从 POST export 解析业务输入",
         "应用领域状态与边界，可重复产出同样的 SVG"
       ]
+    },
+    {
+      "id": "flood",
+      "name": "积水连通分析",
+      "entry": "POST sheet / POST export（water）",
+      "success": "标注入水位置在给定水位可达的整片低地并叠加到图幅",
+      "failure": "山脊、缺测区、顶角接触、水位平齐窄坎不接通，无效起点拒绝",
+      "verification": "node verify/flood-check.mjs",
+      "module_ids": [
+        "http",
+        "terrain",
+        "water",
+        "sheet",
+        "ui"
+      ],
+      "steps": [
+        "在全格网三角网上标注湿面并按共享边求连通分量",
+        "定位入水位置并拒绝缺测、旱地、水位平齐和顶点歧义点",
+        "合并湿面截多边形为积水环，按选幅裁剪后叠加到 SVG"
+      ]
     }
   ],
   "complexity": {
@@ -131,7 +156,9 @@
       "选幅几何裁剪",
       "跨三角面的剖面插值",
       "可重现 SVG",
-      "几何输出容量限制"
+      "几何输出容量限制",
+      "湿面连通分量与入水点歧义判定",
+      "积水环合并与图面取点留白校正"
     ]
   }
 }
