@@ -26,6 +26,10 @@
     {
       "workflow_id": "export",
       "command": "node --input-type=module -e 'import {compose} from \"./server/sheet/compose.mjs\"; import {demo} from \"./server/terrain/demo.mjs\"; const data={grid:demo()}; const a=compose(data); if(!a.svg.includes(\"data-elevation\")||a.svg!==compose(data).svg)process.exit(1); console.log(a.svg.length);'"
+    },
+    {
+      "workflow_id": "budget",
+      "command": "node --input-type=module -e 'import {compose} from \"./server/sheet/compose.mjs\"; import {demo} from \"./server/terrain/demo.mjs\"; const a=compose({grid:demo(),budget:true,bounds:{left:40,bottom:40,right:450,top:370}}); if(!a.budget||![1,2,5,10].includes(a.budget.factor)||a.budget.interval!==a.budget.factor*(20)||a.levels.length>100||!a.svg.includes(\"data-elevation\")||a.svg!==compose({grid:demo(),budget:true,bounds:{left:40,bottom:40,right:450,top:370}}).svg)process.exit(1); console.log(a.budget);'"
     }
   ]
 }

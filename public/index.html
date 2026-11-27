@@ -9,6 +9,7 @@
 <aside><h2>制图参数</h2><form><div class="tools"><button id="demo" type="button">读取示例</button><label>导入格网<input id="file" type="file" accept=".json"></label></div>
 <label>格网 JSON<textarea name="grid" rows="3" spellcheck="false"></textarea></label>
 <div class="pair"><label>等高距 / 米<input name="interval" type="number" value="20" step="any"></label><label>参考高程 / 米<input name="offset" type="number" value="0" step="any"></label></div>
+<label class="toggle"><input type="checkbox" name="budget">按预算出图</label>
 <label class="toggle"><input type="checkbox" name="crop">限定图幅</label>
 <fieldset id="crop-fields" hidden><legend>图幅边界 / 米</legend><div class="pair"><label>西<input type="number" name="left" value="40" step="any"></label><label>东<input type="number" name="right" value="450" step="any"></label><label>南<input type="number" name="bottom" value="40" step="any"></label><label>北<input type="number" name="top" value="370" step="any"></label></div></fieldset>
 <label class="toggle"><input type="checkbox" name="measure">自定义测线</label>

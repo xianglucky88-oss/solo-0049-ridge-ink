@@ -6,6 +6,7 @@ export function job(form) {
   const parameters = numbers(['interval','offset'])
   if (!Object.values(parameters).every(Number.isFinite)) throw new Error('请输入有效等高距和参考高程。')
   return { grid, ...parameters,
+    budget: field.get('budget') === 'on',
     bounds: field.get('crop') ? numbers(['left','bottom','right','top']) : null,
     section: field.get('measure') ? numbers(['x1','y1','x2','y2','count']) : null }
 }

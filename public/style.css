@@ -201,6 +201,13 @@ button:disabled {
   min-width: 5em;
 }
 
+.legend li.tier {
+  color: var(--rust);
+  border-bottom: 1px solid var(--edge);
+  padding-bottom: 4px;
+  margin-bottom: 3px;
+}
+
 @media(max-width:720px) {
   main {
     grid-template-columns: 1fr;

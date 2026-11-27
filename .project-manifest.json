@@ -120,6 +120,24 @@
         "从 POST export 解析业务输入",
         "应用领域状态与边界，可重复产出同样的 SVG"
       ]
+    },
+    {
+      "id": "budget",
+      "name": "预算出图",
+      "entry": "POST sheet",
+      "success": "按实际等高距保留幅内完整线迹",
+      "failure": "级数或绘图顶点超限拒绝",
+      "verification": "node --input-type=module -e 'import {compose} from \"./server/sheet/compose.mjs\"; import {demo} from \"./server/terrain/demo.mjs\"; const a=compose({grid:demo(),budget:true,bounds:{left:40,bottom:40,right:450,top:370}}); if(!a.budget||![1,2,5,10].includes(a.budget.factor)||a.budget.interval!==a.budget.factor*(20)||a.levels.length>100||!a.svg.includes(\"data-elevation\")||a.svg!==compose({grid:demo(),budget:true,bounds:{left:40,bottom:40,right:450,top:370}}).svg)process.exit(1); console.log(a.budget);'",
+      "module_ids": [
+        "http",
+        "contour",
+        "sheet",
+        "ui"
+      ],
+      "steps": [
+        "从 POST sheet 解析带预算选项的输入",
+        "以基础等高距为基准选择 1/2/5/10 倍实际档位并保留幅内线迹"
+      ]
     }
   ],
   "complexity": {

@@ -24,7 +24,10 @@ async function render() {
     q('#profile-note').textContent = `测线总长 ${sheet.section.length.toFixed(1)} 米 · ${missing} 个缺测点`
     lastJob = input
     q('#export').disabled = false
-    status(`预览已更新 · ${sheet.faces} 个有效三角面`)
+    const budget = sheet.budget
+    status(budget
+      ? `预览已更新 · 实际等高距 ${Number(budget.interval.toFixed(3))} 米（基础 ${Number((input.interval ?? 20).toFixed(3))} 米的 ${budget.factor} 倍）· ${budget.points} 个绘图点 · ${sheet.faces} 个有效三角面`
+      : `预览已更新 · 实际等高距 ${Number((input.interval ?? 20).toFixed(3))} 米 · ${sheet.faces} 个有效三角面`)
   } catch (error) { status(error.message) }
   finally { busy = false }
 }
