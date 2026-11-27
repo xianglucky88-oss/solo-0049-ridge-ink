@@ -8,11 +8,13 @@
 
 等高线按参考高程与等高距产生最多 100 个高程级。等高点归于该级高侧；精确落在顶点的交点按格点标识去重，其他交点按共享边标识去重。全等高面内部没有线，分岔顶点不自动选相接方向。出图前裁剪路径，选幅内允许最多 200,000 个路径顶点。
 
+多幅拼版时，同一份格网与分级设置只提取一次全局等高线路径，再按各矩形图幅裁剪。图幅内部两两不得有正面积重叠，相邻幅可只共用一截边（允许 T 字接点）。共边交点用与左右边无关的规范参数式求交并吸附到边界常数，使大幅边缘中途分给两张小幅时，两侧线端仍是逐位相同的制图坐标；只在角尖轻蹭的退化区间（含浮点扰动）塌缩为空，不产出短线或假接点。等高线某段正好落在共边上时，竖边归西侧图幅印制、横边归南侧图幅印制；左/底边上的沿边段仅在确实被西邻/南邻幅覆盖的区间让出，未覆盖段仍由本幅保留。缺测中止线与分岔支路沿用原路径规则，不跨路径补接。顶点上限按每一幅分别计量；整组是否可交付取决于每幅是否都不超限。
+
 剖面等间距采样包含两端点；缺测位置记 `null`。位于边界的样点采相邻有效面，共边插值相同。剖面端点使用整个格网的东、北坐标。SVG 的 x 从选幅西边向东，y 从选幅北边向南；`data-elevation` 保存该线高程。
 
 ## 接口
 
-`GET /api/ridge-ink/demo` 返回格网。`POST /api/ridge-ink/sheet` 接收 `grid`、`interval`、`offset` 以及可选 `bounds`、`section`，返回图幅 SVG、分级路径数和剖面。`POST /api/ridge-ink/export` 使用相同输入下载 SVG。
+`GET /api/ridge-ink/demo` 返回格网。`POST /api/ridge-ink/sheet` 接收 `grid`、`interval`、`offset` 以及可选 `bounds`、`section`，返回图幅 SVG、分级路径数和剖面。`bounds` 也可传成矩形数组以请求多幅组，或改传 `sheets: [{ id?, name?, left, bottom, right, top }]`（元素也可为 `[左,南,东,北]`）；此时返回 `mode:"atlas"`、`sheets[]`（每幅含 `bounds`、`svg`、`levels`、`vertices`）以及整组拼版 `svg`/`atlasSvg`。`POST /api/ridge-ink/sheet/<id|index>` 或在 body 带 `sheet`/`sheetId`/`sheetIndex` 只给某一张。`POST /api/ridge-ink/export` 使用相同输入下载 SVG：带图幅选择器出单张，否则单幅出该幅、多幅出整组拼版；`export-all` 恒出整组，`export-sheet` 必带选择器。任一幅边界无效、重叠或超顶点上限时返回 4xx，错误信息点名相关图幅并附 `issues`。
 
 ## 模块
 

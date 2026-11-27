@@ -17,8 +17,10 @@ export function createApp() {
       }
     } catch (error) {
       if (!(error instanceof InputError)) console.error(error)
-      respond(response, { status: error instanceof InputError ? error.status : 500,
-        body: { error: error instanceof InputError ? error.message : '处理失败，请重试。' } })
+      const status = error instanceof InputError ? error.status : 500
+      const body = { error: error instanceof InputError ? error.message : '处理失败，请重试。' }
+      if (error instanceof InputError && Array.isArray(error.issues) && error.issues.length) body.issues = error.issues
+      respond(response, { status, body })
     }
   })
 }

@@ -1,5 +1,6 @@
 export function drawProfile(canvas, profile) {
   const ctx = canvas.getContext('2d')
+  if (!ctx) return
   const w = canvas.width, h = canvas.height, pad = 40
   const measured = profile.filter(point => point.z !== null)
   ctx.clearRect(0, 0, w, h)

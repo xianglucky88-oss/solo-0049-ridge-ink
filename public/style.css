@@ -68,6 +68,59 @@ aside,.print {
   flex-wrap: wrap;
 }
 
+.print-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.tab {
+  padding: 4px 12px;
+  font-size: .85rem;
+  border-radius: 999px;
+  background: #fffdf5;
+}
+
+.tab.active {
+  background: var(--rust);
+  border-color: var(--rust);
+  color: #fff;
+}
+
+.confirmed-note {
+  margin-top: 8px;
+  font-size: .82rem;
+  color: #8a6d1f;
+  background: #f6eccb;
+  border: 1px solid #e0cf95;
+  padding: 5px 8px;
+}
+
+.group-tools {
+  display: grid;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.group-tools .hint {
+  font-size: .74rem;
+  color: #7a6d52;
+  line-height: 1.35;
+}
+
+#group-fields textarea {
+  margin-top: 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .76rem;
+}
+
 .map {
   border: 1px solid var(--edge);
   margin-block: 12px;
