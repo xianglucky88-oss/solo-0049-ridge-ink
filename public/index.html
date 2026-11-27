@@ -4,7 +4,7 @@
 <title>岭线排图</title><link rel="stylesheet" href="/style.css"><script type="module" src="/js/main.mjs"></script></head>
 <body><header><h1>岭线排图</h1><p>高程格网制图与测线剖面</p></header>
 <main><section class="print"><div class="printbar"><h2>图幅</h2><button id="export" disabled>导出当前图幅 SVG</button></div>
-<div class="map"><img id="sheet" alt="当前图幅的地形等高线" hidden></div>
+<div class="map"><div id="sheet" role="img" aria-label="当前图幅的地形等高线，高程标注可拖动"></div></div>
 <div class="cut"><h2>测线剖面</h2><p id="profile-note"></p><canvas id="profile" width="610" height="145" aria-label="高程剖面图"></canvas></div></section>
 <aside><h2>制图参数</h2><form><div class="tools"><button id="demo" type="button">读取示例</button><label>导入格网<input id="file" type="file" accept=".json"></label></div>
 <label>格网 JSON<textarea name="grid" rows="3" spellcheck="false"></textarea></label>
