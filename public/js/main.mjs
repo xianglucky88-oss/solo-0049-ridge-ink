@@ -19,9 +19,15 @@ async function render() {
     const sheet = await request('sheet', input)
     showArtwork(q('#sheet'), sheet.svg)
     showLevels(q('#levels'), sheet)
-    drawProfile(q('#profile'), sheet.profile)
+    drawProfile(q('#profile'), sheet.profile, sheet.trace)
+    const gaps = sheet.trace.gaps
     const missing = sheet.profile.filter(p => p.z === null).length
-    q('#profile-note').textContent = `测线总长 ${sheet.section.length.toFixed(1)} 米 · ${missing} 个缺测点`
+    const detail = gaps.length
+      ? `，${gaps.length} 段缺测（${gaps.map(gap => `${gap.start.toFixed(1)}–${gap.end.toFixed(1)}`).join('、')} 米）`
+      : ''
+    q('#profile-note').textContent =
+      `测线总长 ${sheet.section.length.toFixed(1)} 米 · ${sheet.trace.segments.length} 条有观测折线 · ` +
+      `${sheet.trace.isolated.length} 个孤立读数 · 等距测点缺测 ${missing} 个${detail}`
     lastJob = input
     q('#export').disabled = false
     status(`预览已更新 · ${sheet.faces} 个有效三角面`)

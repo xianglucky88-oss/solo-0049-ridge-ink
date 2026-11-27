@@ -10,16 +10,18 @@
 
 剖面等间距采样包含两端点；缺测位置记 `null`。位于边界的样点采相邻有效面，共边插值相同。剖面端点使用整个格网的东、北坐标。SVG 的 x 从选幅西边向东，y 从选幅北边向南；`data-elevation` 保存该线高程。
 
+除等距采样外，接口沿整条直线给出有观测支撑的剖面 `trace`：有效三角面边与测线的交点（坡折候选）把测线划分成若干区间，区间中点可读到高程则整段有观测支撑，事件点单独判读。输出包含三类数据：`segments` 为有观测支撑的折线（共边两侧任一面有效即读高程，共有里程只画一次，顶点含坡折）、`gaps` 为缺测区间的起止里程（按从新起点计的里程排列）、`isolated` 为只在单个点碰到测线的孤立高程读数，其两侧缺测仍断开。改变采样点数只改变等距测点，`trace` 不变；起终点对调后里程顺序整体反转，坡折与缺测仍对应同一地面位置；图幅选段不影响剖面，剖面始终从指定起点画到终点。`profile` 继续按原约定提供等距测点的里程与高程。
+
 ## 接口
 
-`GET /api/ridge-ink/demo` 返回格网。`POST /api/ridge-ink/sheet` 接收 `grid`、`interval`、`offset` 以及可选 `bounds`、`section`，返回图幅 SVG、分级路径数和剖面。`POST /api/ridge-ink/export` 使用相同输入下载 SVG。
+`GET /api/ridge-ink/demo` 返回格网。`POST /api/ridge-ink/sheet` 接收 `grid`、`interval`、`offset` 以及可选 `bounds`、`section`，返回图幅 SVG、分级路径数、等距剖面 `profile` 和有观测支撑的 `trace`（含 `segments`、`gaps`、`isolated`）。`POST /api/ridge-ink/export` 使用相同输入下载 SVG。
 
 ## 模块
 
 - `server/http` 负责输入边界及输出媒体类型。
 - `server/terrain` 负责高程格网、相邻面和三角插值。
 - `server/contour` 负责等高交点与路径连通。
-- `server/profile` 负责测线长度、采样和缺测。
+- `server/profile` 负责测线长度、等距采样、有观测支撑折线以及缺测区间。
 - `server/sheet` 负责选幅、裁剪与矢量制图。
 - `public/js` 负责制图编辑、预览和下载。
 

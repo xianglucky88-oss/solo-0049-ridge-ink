@@ -24,6 +24,10 @@
       "command": "node --input-type=module -e 'import {compose} from \"./server/sheet/compose.mjs\"; import {demo} from \"./server/terrain/demo.mjs\"; const a=compose({grid:demo(),section:{x1:0,y1:140,x2:540,y2:140,count:61}}); if(a.profile.length!==61||!a.profile.some(p=>p.z===null)||a.profile.at(-1).distance!==540)process.exit(1); console.log(a.section.length);'"
     },
     {
+      "workflow_id": "trace",
+      "command": "node scripts/check-trace.mjs"
+    },
+    {
       "workflow_id": "export",
       "command": "node --input-type=module -e 'import {compose} from \"./server/sheet/compose.mjs\"; import {demo} from \"./server/terrain/demo.mjs\"; const data={grid:demo()}; const a=compose(data); if(!a.svg.includes(\"data-elevation\")||a.svg!==compose(data).svg)process.exit(1); console.log(a.svg.length);'"
     }
