@@ -26,6 +26,14 @@
     {
       "workflow_id": "export",
       "command": "node --input-type=module -e 'import {compose} from \"./server/sheet/compose.mjs\"; import {demo} from \"./server/terrain/demo.mjs\"; const data={grid:demo()}; const a=compose(data); if(!a.svg.includes(\"data-elevation\")||a.svg!==compose(data).svg)process.exit(1); console.log(a.svg.length);'"
+    },
+    {
+      "workflow_id": "measure",
+      "command": "node --input-type=module -e 'import {compose} from \"./server/sheet/compose.mjs\"; const g={width:3,height:3,unit:10,elevations:Array(9).fill(0)}; const d={width:3,height:3,unit:10,elevations:Array(9).fill(10)}; const a=compose({grid:g,design:d}); if(a.zones.length!==1||Math.abs(a.zones[0].area-400)>1e-6||Math.abs(a.zones[0].volume-4000)>1e-6||a.none.area!==0||a.unknown.area!==0)process.exit(1); console.log(a.zones);'"
+    },
+    {
+      "workflow_id": "workarea",
+      "command": "node --input-type=module -e 'import {compose} from \"./server/sheet/compose.mjs\"; import {briefing} from \"./server/measure/briefing.mjs\"; const g={width:3,height:3,unit:10,elevations:Array(9).fill(0)}; const d={width:3,height:3,unit:10,elevations:Array(9).fill(10)}; const a=compose({grid:g,design:d}); const sel={sheetId:a.sheetId,zones:[a.zones[0].id]}; const b=compose({grid:g,design:d,selection:sel}); const e=briefing({grid:g,design:d,selection:sel}); if(b.svg!==e.briefing||!b.svg.includes(\"data-mode=\\\"briefing\\\"\"))process.exit(1); let ok=false; try{briefing({grid:g,design:d})}catch(x){ok=/选/.test(x.message)} if(!ok)process.exit(1); console.log(b.selection);'"
     }
   ]
 }

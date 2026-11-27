@@ -27,6 +27,11 @@
       "responsibility": "选幅、裁剪与矢量制图"
     },
     {
+      "id": "measure",
+      "path": "server/measure",
+      "responsibility": "双网平面叠加、挖填分区、合并、核量与交底图"
+    },
+    {
       "id": "ui",
       "path": "public/js",
       "responsibility": "制图编辑、预览和下载"
@@ -120,6 +125,44 @@
         "从 POST export 解析业务输入",
         "应用领域状态与边界，可重复产出同样的 SVG"
       ]
+    },
+    {
+      "id": "measure",
+      "name": "挖填核量",
+      "entry": "POST sheet",
+      "success": "双网分区面积覆盖图幅，同高为零深度、缺面为无法核量",
+      "failure": "缺设计格网或选幅出界拒绝",
+      "verification": "node --input-type=module -e 'import {compose} from \"./server/sheet/compose.mjs\"; const g={width:3,height:3,unit:10,elevations:Array(9).fill(0)}; const d={width:3,height:3,unit:10,elevations:Array(9).fill(10)}; const a=compose({grid:g,design:d}); if(a.zones.length!==1||Math.abs(a.zones[0].area-400)>1e-6||Math.abs(a.zones[0].volume-4000)>1e-6||a.none.area!==0||a.unknown.area!==0)process.exit(1); console.log(a.zones);'",
+      "module_ids": [
+        "terrain",
+        "measure",
+        "sheet"
+      ],
+      "steps": [
+        "从 POST sheet 解析两份格网与选幅",
+        "按两网三角面叠加分区，按实际零高差线分界",
+        "沿有真实深度的共边合并同类分片",
+        "输出各片面积、方量与合计"
+      ]
+    },
+    {
+      "id": "workarea",
+      "name": "按工区导出交底",
+      "entry": "POST export",
+      "success": "交底图沿用图框与片号，只标所选工区并列各片面积方量与所选合计",
+      "failure": "未选片或选片来自另一张核量图提示重选",
+      "verification": "node --input-type=module -e 'import {compose} from \"./server/sheet/compose.mjs\"; import {briefing} from \"./server/measure/briefing.mjs\"; const g={width:3,height:3,unit:10,elevations:Array(9).fill(0)}; const d={width:3,height:3,unit:10,elevations:Array(9).fill(10)}; const a=compose({grid:g,design:d}); const sel={sheetId:a.sheetId,zones:[a.zones[0].id]}; const b=compose({grid:g,design:d,selection:sel}); const e=briefing({grid:g,design:d,selection:sel}); if(b.svg!==e.briefing||!b.svg.includes(\"data-mode=\\\"briefing\\\"\"))process.exit(1); let ok=false; try{briefing({grid:g,design:d})}catch(x){ok=/选/.test(x.message)} if(!ok)process.exit(1); console.log(b.selection);'",
+      "module_ids": [
+        "http",
+        "measure",
+        "sheet",
+        "ui"
+      ],
+      "steps": [
+        "从 POST export 解析选片",
+        "校验选片归属当前核量图",
+        "沿用图框与片号绘制交底图并列出合计"
+      ]
     }
   ],
   "complexity": {
@@ -131,7 +174,12 @@
       "选幅几何裁剪",
       "跨三角面的剖面插值",
       "可重现 SVG",
-      "几何输出容量限制"
+      "几何输出容量限制",
+      "双网三角面叠加",
+      "零高差分界",
+      "共边深度判定的工区分并",
+      "多边形轮廓合并与 T 形接点",
+      "选片归属标识"
     ]
   }
 }

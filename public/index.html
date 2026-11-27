@@ -2,16 +2,30 @@
 <html lang="zh-CN">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>岭线排图</title><link rel="stylesheet" href="/style.css"><script type="module" src="/js/main.mjs"></script></head>
-<body><header><h1>岭线排图</h1><p>高程格网制图与测线剖面</p></header>
-<main><section class="print"><div class="printbar"><h2>图幅</h2><button id="export" disabled>导出当前图幅 SVG</button></div>
-<div class="map"><img id="sheet" alt="当前图幅的地形等高线" hidden></div>
-<div class="cut"><h2>测线剖面</h2><p id="profile-note"></p><canvas id="profile" width="610" height="145" aria-label="高程剖面图"></canvas></div></section>
+<body><header><h1>岭线排图</h1><p>高程格网制图、测线剖面与挖填核量</p></header>
+<main><section class="print">
+<div class="printbar"><h2>图幅</h2>
+<span class="export-group"><button id="export" disabled>导出当前图幅 SVG</button><button id="briefing" hidden disabled>导出工区交底 SVG</button></span></div>
+<div class="map" id="map"><img id="sheet" alt="当前图幅的地形等高线" hidden><div id="measure-sheet" class="measure" hidden></div></div>
+<div class="cut"><h2>测线剖面</h2><p id="profile-note"></p><canvas id="profile" width="610" height="145" aria-label="高程剖面图"></canvas></div>
+</section>
 <aside><h2>制图参数</h2><form><div class="tools"><button id="demo" type="button">读取示例</button><label>导入格网<input id="file" type="file" accept=".json"></label></div>
-<label>格网 JSON<textarea name="grid" rows="3" spellcheck="false"></textarea></label>
+<label>现状格网 JSON<textarea name="grid" rows="3" spellcheck="false"></textarea></label>
+<label class="toggle"><input type="checkbox" name="design">加入设计格网核量</label>
+<fieldset id="design-fields" hidden><legend>设计格网</legend>
+<label>设计格网 JSON<textarea name="design-grid" rows="3" spellcheck="false"></textarea></label>
+<div class="pair"><label>设计西南起点东<input type="number" name="design-left" step="any" placeholder="0"></label><label>设计西南起点北<input type="number" name="design-bottom" step="any" placeholder="0"></label></div>
+</fieldset>
 <div class="pair"><label>等高距 / 米<input name="interval" type="number" value="20" step="any"></label><label>参考高程 / 米<input name="offset" type="number" value="0" step="any"></label></div>
 <label class="toggle"><input type="checkbox" name="crop">限定图幅</label>
 <fieldset id="crop-fields" hidden><legend>图幅边界 / 米</legend><div class="pair"><label>西<input type="number" name="left" value="40" step="any"></label><label>东<input type="number" name="right" value="450" step="any"></label><label>南<input type="number" name="bottom" value="40" step="any"></label><label>北<input type="number" name="top" value="370" step="any"></label></div></fieldset>
 <label class="toggle"><input type="checkbox" name="measure">自定义测线</label>
 <fieldset id="section-fields" hidden><legend>测线端点 / 米</legend><div class="pair"><label>起点东<input name="x1" type="number" value="0" step="any"></label><label>起点北<input name="y1" type="number" value="130" step="any"></label><label>终点东<input name="x2" type="number" value="540" step="any"></label><label>终点北<input name="y2" type="number" value="130" step="any"></label></div><label>测点数<input type="number" name="count" value="61"></label></fieldset>
 <button class="primary">更新图幅</button><p id="status" role="status"></p></form>
+<section class="measure-panel" id="measure-panel" hidden><h2>挖填工区清单</h2>
+<p class="hint" id="measure-hint"></p>
+<ul id="zones"></ul>
+<p class="total" id="selected-total"></p>
+<button id="clear-selection" type="button">清空选片</button>
+</section>
 <section class="legend"><h2>高程分层</h2><ul id="levels"></ul></section></aside></main></body></html>

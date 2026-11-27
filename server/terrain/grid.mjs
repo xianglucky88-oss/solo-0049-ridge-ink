@@ -8,6 +8,12 @@ export function grid(input) {
     !elevations.every(n => n === null || Number.isFinite(n) && Math.abs(n) <= 50000)) {
     throw new InputError('需要 2–100 列和行、有效格距以及与格点数一致的高程数组。')
   }
-  const vertices = elevations.map((z, id) => ({ id, z, x: id % width * unit, y: Math.floor(id / width) * unit }))
-  return { width, height, unit, vertices, right: (width - 1) * unit, top: (height - 1) * unit }
+  const originX = input.originX ?? input.origin?.x ?? 0
+  const originY = input.originY ?? input.origin?.y ?? 0
+  if (!Number.isFinite(originX) || !Number.isFinite(originY) || Math.abs(originX) > 1000000 || Math.abs(originY) > 1000000) {
+    throw new InputError('格网西南起点需要为有效的米制坐标。')
+  }
+  const vertices = elevations.map((z, id) => ({ id, z, x: originX + id % width * unit, y: originY + Math.floor(id / width) * unit }))
+  return { width, height, unit, originX, originY, vertices,
+    right: originX + (width - 1) * unit, top: originY + (height - 1) * unit }
 }
